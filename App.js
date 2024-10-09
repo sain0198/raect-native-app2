@@ -4,6 +4,7 @@ import axios from "axios";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import UserAvatar from 'react-native-user-avatar';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Platform } from "react-native";
 
 export default function App() {
   const [comments, setComments] = useState([]);
@@ -38,14 +39,13 @@ export default function App() {
 
   // Item renderer for FlatList
   const renderItem = ({ item }) => (
-    <View style={{borderBottomWidth:2, borderRadius:10, borderColor:"black", marginBottom: 10, flexDirection:"row", justifyContent: "space-between"}}>
+    <View style={{borderBottomWidth:2, borderRadius:10, borderColor:"black", marginBottom: 10, flexDirection: Platform.OS === "android" ? "row-reverse" :"row", justifyContent: "space-between"}}>
       <View style={{justifyContent: "center"}}>
         <Text style={styles.name}>{item.first_name}</Text>
         <Text style={styles.name}>{item.last_name}</Text>
       </View>
       <View>
         <UserAvatar size={100} name="Avishay Bar" src={item.avatar} />
-        
       </View>
     </View>
   );
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 20,
+    textAlign: Platform.OS === "android" ? "right" : "left",
   },
   fab: {
     position: 'absolute',
