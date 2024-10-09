@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, Text, View, TouchableOpacity, RefreshControl} from "react-native";
 import axios from "axios";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import UserAvatar from 'react-native-user-avatar';
@@ -7,6 +7,19 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 export default function App() {
   const [comments, setComments] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+
+  const addOneResult = () => {
+    axios
+      .get("https://random-data-api.com/api/v2/users?size=1")
+      .then((response) => {
+        setComments([response.data, ...comments]);
+      })
+      .catch((e) => {
+        console.log("Error fetching data: ", e);
+      });
+  }
 
   const fetch10Results = () => {
     axios
@@ -15,7 +28,7 @@ export default function App() {
         setComments(response.data);
       })
       .catch((e) => {
-        console.error("Error fetching data: ", e);
+        console.log("Error fetching data: ", e);
       });
   }
 
@@ -44,12 +57,15 @@ export default function App() {
     <SafeAreaProvider style={styles.container}>
       <SafeAreaView>
         <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={fetch10Results} />
+          }
           data={comments}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
         />
         {/* Floating Action Button */}
-        <TouchableOpacity style={styles.fab} >
+        <TouchableOpacity style={styles.fab} onPress={addOneResult}>
           <MaterialIcons name="add" size={24} color="white" />
         </TouchableOpacity>
       </SafeAreaView>
